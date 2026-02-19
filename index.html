@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mappa pali Control Building</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+    }
+
+    .wrapper {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .map-container {
+      position: relative;
+      background: #ddd;
+      border: 1px solid #999;
+      max-width: 100%;
+      overflow: visible;
+    }
+
+    .map-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .marker {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00aaff;
+      border: 2px solid #fff;
+      box-shadow: 0 0 4px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+    }
+
+    .marker:hover {
+      background: #0077cc;
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 4px 8px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      font-size: 12px;
+      border-radius: 3px;
+      pointer-events: none;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+      display: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="map-container" id="map">
+      <img src="img/pianta_pali_control_building.jpg" alt="Mappa pali Control Building" id="mapImage" />
+      <div id="tooltip" class="tooltip"></div>
+    </div>
+  </div>
+
+  <script>
+    const markers = [
+      /* --- Pali 1–32 --- */
+      { id: "Palo 1", x: 340, y: 544, pdf: "pdf/P1.pdf" },
+{ id: "Palo 2", x: 541, y: 544, pdf: "pdf/P2.pdf" },
+{ id: "Palo 3", x: 440, y: 645, pdf: "pdf/P3.pdf" },
+{ id: "Palo 4", x: 340, y: 746, pdf: "pdf/P4.pdf" },
+{ id: "Palo 5", x: 541, y: 746, pdf: "pdf/P5.pdf" },
+{ id: "Palo 6", x: 440, y: 847, pdf: "pdf/P6.pdf" },
+{ id: "Palo 7", x: 340, y: 946, pdf: "pdf/P7.pdf" },
+{ id: "Palo 8", x: 541, y: 946, pdf: "pdf/P8.pdf" },
+
+{ id: "Palo 10", x: 340, y: 1148, pdf: "pdf/P10.pdf" },
+{ id: "Palo 11", x: 541, y: 1148, pdf: "pdf/P11.pdf" },
+{ id: "Palo 12", x: 440, y: 1248, pdf: "pdf/P12.pdf" },
+{ id: "Palo 13", x: 340, y: 1348, pdf: "pdf/P13.pdf" },
+{ id: "Palo 14", x: 541, y: 1348, pdf: "pdf/P14.pdf" },
+
+{ id: "Palo 16", x: 340, y: 1549, pdf: "pdf/P16.pdf" },
+{ id: "Palo 17", x: 541, y: 1549, pdf: "pdf/P17.pdf" },
+{ id: "Palo 18", x: 440, y: 1650, pdf: "pdf/P18.pdf" },
+{ id: "Palo 19", x: 340, y: 1749, pdf: "pdf/P19.pdf" },
+{ id: "Palo 20", x: 541, y: 1749, pdf: "pdf/P20.pdf" },
+
+{ id: "Palo 22", x: 340, y: 1951, pdf: "pdf/P22.pdf" },
+{ id: "Palo 23", x: 541, y: 1951, pdf: "pdf/P23.pdf" },
+{ id: "Palo 24", x: 440, y: 2052, pdf: "pdf/P24.pdf" },
+{ id: "Palo 25", x: 340, y: 2151, pdf: "pdf/P25.pdf" },
+{ id: "Palo 26", x: 541, y: 2151, pdf: "pdf/P26.pdf" },
+
+{ id: "Palo 28", x: 340, y: 2351, pdf: "pdf/P28.pdf" },
+{ id: "Palo 29", x: 541, y: 2351, pdf: "pdf/P29.pdf" },
+{ id: "Palo 30", x: 440, y: 2452, pdf: "pdf/P30.pdf" },
+{ id: "Palo 31", x: 340, y: 2553, pdf: "pdf/P31.pdf" },
+{ id: "Palo 32", x: 541, y: 2553, pdf: "pdf/P32.pdf" },
+
+      /* --- Pali 33–57 --- */
+      { id: "Palo 33", x: 1070, y: 547, pdf: "pdf/P33.pdf" },
+{ id: "Palo 34", x: 1272, y: 547, pdf: "pdf/P34.pdf" },
+{ id: "Palo 35", x: 1170, y: 648, pdf: "pdf/P35.pdf" },
+{ id: "Palo 36", x: 1070, y: 749, pdf: "pdf/P36.pdf" },
+{ id: "Palo 37", x: 1272, y: 749, pdf: "pdf/P37.pdf" },
+{ id: "Palo 38", x: 1070, y: 966, pdf: "pdf/P38.pdf" },
+{ id: "Palo 39", x: 1272, y: 966, pdf: "pdf/P39.pdf" },
+{ id: "Palo 40", x: 1170, y: 1067, pdf: "pdf/P40.pdf" },
+{ id: "Palo 41", x: 1070, y: 1168, pdf: "pdf/P41.pdf" },
+{ id: "Palo 42", x: 1272, y: 1168, pdf: "pdf/P42.pdf" },
+{ id: "Palo 43", x: 1070, y: 1386, pdf: "pdf/P43.pdf" },
+{ id: "Palo 44", x: 1272, y: 1386, pdf: "pdf/P44.pdf" },
+{ id: "Palo 45", x: 1170, y: 1487, pdf: "pdf/P45.pdf" },
+{ id: "Palo 46", x: 1070, y: 1588, pdf: "pdf/P46.pdf" },
+{ id: "Palo 47", x: 1272, y: 1588, pdf: "pdf/P47.pdf" },
+{ id: "Palo 48", x: 1070, y: 1807, pdf: "pdf/P48.pdf" },
+{ id: "Palo 49", x: 1272, y: 1807, pdf: "pdf/P49.pdf" },
+{ id: "Palo 50", x: 1170, y: 1906, pdf: "pdf/P50.pdf" },
+{ id: "Palo 51", x: 1070, y: 2007, pdf: "pdf/P51.pdf" },
+{ id: "Palo 52", x: 1272, y: 2007, pdf: "pdf/P52.pdf" },
+{ id: "Palo 53", x: 1070, y: 2226, pdf: "pdf/P53.pdf" },
+{ id: "Palo 54", x: 1272, y: 2226, pdf: "pdf/P54.pdf" },
+{ id: "Palo 55", x: 1170, y: 2325, pdf: "pdf/P55.pdf" },
+{ id: "Palo 56", x: 1070, y: 2426, pdf: "pdf/P56.pdf" },
+{ id: "Palo 57", x: 1272, y: 2426, pdf: "pdf/P57.pdf" },
+
+      /* --- Pali 58–82 --- */
+      { id: "Palo 58", x: 1755, y: 547, pdf: "pdf/P58.pdf" },
+{ id: "Palo 59", x: 1955, y: 547, pdf: "pdf/P59.pdf" },
+{ id: "Palo 60", x: 1856, y: 649, pdf: "pdf/P60.pdf" },
+{ id: "Palo 61", x: 1755, y: 749, pdf: "pdf/P61.pdf" },
+{ id: "Palo 62", x: 1955, y: 749, pdf: "pdf/P62.pdf" },
+{ id: "Palo 63", x: 1755, y: 968, pdf: "pdf/P63.pdf" },
+{ id: "Palo 64", x: 1955, y: 968, pdf: "pdf/P64.pdf" },
+{ id: "Palo 65", x: 1856, y: 1067, pdf: "pdf/P65.pdf" },
+{ id: "Palo 66", x: 1755, y: 1168, pdf: "pdf/P66.pdf" },
+{ id: "Palo 67", x: 1955, y: 1168, pdf: "pdf/P67.pdf" },
+{ id: "Palo 68", x: 1755, y: 1386, pdf: "pdf/P68.pdf" },
+{ id: "Palo 69", x: 1955, y: 1386, pdf: "pdf/P69.pdf" },
+{ id: "Palo 70", x: 1856, y: 1487, pdf: "pdf/P70.pdf" },
+{ id: "Palo 71", x: 1755, y: 1588, pdf: "pdf/P71.pdf" },
+{ id: "Palo 72", x: 1955, y: 1588, pdf: "pdf/P72.pdf" },
+{ id: "Palo 73", x: 1755, y: 1805, pdf: "pdf/P73.pdf" },
+{ id: "Palo 74", x: 1955, y: 1805, pdf: "pdf/P74.pdf" },
+{ id: "Palo 75", x: 1856, y: 1906, pdf: "pdf/P75.pdf" },
+{ id: "Palo 76", x: 1755, y: 2007, pdf: "pdf/P76.pdf" },
+{ id: "Palo 77", x: 1955, y: 2007, pdf: "pdf/P77.pdf" },
+{ id: "Palo 78", x: 1755, y: 2226, pdf: "pdf/P78.pdf" },
+{ id: "Palo 79", x: 1955, y: 2226, pdf: "pdf/P79.pdf" },
+{ id: "Palo 80", x: 1856, y: 2325, pdf: "pdf/P80.pdf" },
+{ id: "Palo 81", x: 1755, y: 2426, pdf: "pdf/P81.pdf" },
+{ id: "Palo 82", x: 1955, y: 2426, pdf: "pdf/P82.pdf" },
+
+      /* --- Pali 83–114 --- */
+      { id: "Palo 83", x: 2484, y: 544, pdf: "pdf/P83.pdf" },
+{ id: "Palo 84", x: 2684, y: 544, pdf: "pdf/P84.pdf" },
+{ id: "Palo 85", x: 2585, y: 645, pdf: "pdf/P85.pdf" },
+{ id: "Palo 86", x: 2484, y: 745, pdf: "pdf/P86.pdf" },
+{ id: "Palo 87", x: 2684, y: 745, pdf: "pdf/P87.pdf" },
+{ id: "Palo 88", x: 2585, y: 845, pdf: "pdf/P88.pdf" },
+{ id: "Palo 89", x: 2484, y: 946, pdf: "pdf/P89.pdf" },
+{ id: "Palo 90", x: 2684, y: 946, pdf: "pdf/P90.pdf" },
+
+{ id: "Palo 92", x: 2484, y: 1148, pdf: "pdf/P92.pdf" },
+{ id: "Palo 93", x: 2684, y: 1148, pdf: "pdf/P93.pdf" },
+{ id: "Palo 94", x: 2583, y: 1248, pdf: "pdf/P94.pdf" },
+{ id: "Palo 95", x: 2484, y: 1348, pdf: "pdf/P95.pdf" },
+{ id: "Palo 96", x: 2685, y: 1348, pdf: "pdf/P96.pdf" },
+
+{ id: "Palo 98", x: 2484, y: 1550, pdf: "pdf/P98.pdf" },
+{ id: "Palo 99", x: 2685, y: 1549, pdf: "pdf/P99.pdf" },
+{ id: "Palo 100", x: 2586, y: 1649, pdf: "pdf/P100.pdf" },
+{ id: "Palo 101", x: 2485, y: 1750, pdf: "pdf/P101.pdf" },
+{ id: "Palo 102", x: 2685, y: 1749, pdf: "pdf/P102.pdf" },
+
+{ id: "Palo 104", x: 2484, y: 1951, pdf: "pdf/P104.pdf" },
+{ id: "Palo 105", x: 2685, y: 1951, pdf: "pdf/P105.pdf" },
+{ id: "Palo 106", x: 2585, y: 2051, pdf: "pdf/P106.pdf" },
+{ id: "Palo 107", x: 2484, y: 2151, pdf: "pdf/P107.pdf" },
+{ id: "Palo 108", x: 2685, y: 2152, pdf: "pdf/P108.pdf" },
+
+{ id: "Palo 110", x: 2484, y: 2353, pdf: "pdf/P110.pdf" },
+{ id: "Palo 111", x: 2685, y: 2353, pdf: "pdf/P111.pdf" },
+{ id: "Palo 112", x: 2585, y: 2454, pdf: "pdf/P112.pdf" },
+{ id: "Palo 113", x: 2485, y: 2553, pdf: "pdf/P113.pdf" },
+{ id: "Palo 114", x: 2685, y: 2553, pdf: "pdf/P114.pdf" },
+
+{ id: "Palo 436", x: 1371, y: 1277, pdf: "pdf/P436.pdf" },
+{ id: "Palo 437", x: 1548, y: 1212, pdf: "pdf/P437.pdf" },
+{ id: "Palo 438", x: 1549, y: 1343, pdf: "pdf/P438.pdf" },
+{ id: "Palo 439", x: 1549, y: 1473, pdf: "pdf/P439.pdf" },
+{ id: "Palo 440", x: 1417, y: 1414, pdf: "pdf/P440.pdf" },
+
+    ];
+
+    const map = document.getElementById("map");
+    const img = document.getElementById("mapImage");
+    const tooltip = document.getElementById("tooltip");
+
+    img.addEventListener("load", () => {
+      const imgWidth = img.naturalWidth;
+      const imgHeight = img.naturalHeight;
+
+      markers.forEach(m => {
+        const el = document.createElement("div");
+        el.className = "marker";
+
+        const leftPercent = (m.x / imgWidth) * 100;
+        const topPercent = (m.y / imgHeight) * 100;
+
+        el.style.left = leftPercent + "%";
+        el.style.top = topPercent + "%";
+
+        el.addEventListener("mouseenter", () => {
+          tooltip.textContent = m.id;
+          tooltip.style.left = leftPercent + "%";
+          tooltip.style.top = topPercent + "%";
+          tooltip.style.display = "block";
+        });
+
+        el.addEventListener("mouseleave", () => {
+          tooltip.style.display = "none";
+        });
+
+        el.addEventListener("click", () => {
+          if (m.pdf) window.open(m.pdf, "_blank");
+        });
+
+        map.appendChild(el);
+      });
+    });
+  </script>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
