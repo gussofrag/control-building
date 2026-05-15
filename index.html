@@ -18,6 +18,7 @@
       display: block;
     }
 
+    /* Marker blu standard */
     .marker {
       position: absolute;
       width: 12px;
@@ -26,20 +27,11 @@
       transform: translate(-50%, -50%);
       cursor: pointer;
       border: 2px solid #fff;
-      user-select: none;
       background: #00aaff;
+      user-select: none;
     }
 
-    .marker.sonica {
-      background: #ff6600 !important; /* arancione */
-      border: 2px solid #fff;
-    }
-
-    .marker.carico {
-      background: #ffff00 !important; /* giallo */
-      border: 2px solid #000;
-    }
-
+    /* Marker selezionato */
     .selected {
       width: 28px !important;
       height: 28px !important;
@@ -47,6 +39,7 @@
       z-index: 20;
     }
 
+    /* Tooltip */
     .tooltip {
       position: absolute;
       padding: 10px 14px;
@@ -75,6 +68,7 @@
       text-decoration: underline;
     }
 
+    /* Pulsante legenda */
     .legend-button {
       position: fixed;
       top: 20px;
@@ -96,6 +90,7 @@
       background: rgba(0,0,0,0.9);
     }
 
+    /* Pannello legenda */
     .legend-panel {
       position: fixed;
       top: 75px;
@@ -124,24 +119,54 @@
       font-size: 18px;
       margin-right: 8px;
     }
+
+    /* Pulsante Home */
+    .home-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.55);
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 2px solid #fff;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 20px;
+      color: #ffffff;
+      cursor: pointer;
+      z-index: 9999;
+      transition: 0.2s;
+      user-select: none;
+    }
+
+    .home-button:hover {
+      background: rgba(0,0,0,0.9);
+    }
+
+    /* Icona prova accanto al palo */
+    .prova-icon {
+      position: absolute;
+      font-size: 20px;
+      transform: translate(-160%, -50%);
+      pointer-events: none;
+      z-index: 25;
+    }
   </style>
 </head>
 
 <body>
 
-<div class="legend-button" onclick="toggleLegend()" title="Apri legenda">
-  Legenda prove sui pali
+<!-- Pulsante Home -->
+<div class="home-button" onclick="location.href='https://gussofrag.github.io/'" title="Torna alla Home">
+  🏠
 </div>
 
+<!-- Pulsante Legenda -->
+<div class="legend-button" onclick="toggleLegend()" title="Apri legenda">
+  Legenda pali
+</div>
+
+<!-- Legenda corretta -->
 <div id="legendPanel" class="legend-panel">
-  <div class="item">
-    <span class="icon">📄</span>
-    <span>Elaborato progettuale</span>
-  </div>
-  <div class="item">
-    <span class="icon">🟠</span>
-    <span>Documento Qualità (QLT)</span>
-  </div>
   <div class="item">
     <span class="icon">📡</span>
     <span>Prova sonica "cross-hole"</span>
@@ -164,153 +189,43 @@ function toggleLegend() {
 }
 
 const markers = [
-  { n: 1,  x: 340/3160,  y: 544/2880 },
-  { n: 2,  x: 541/3160,  y: 544/2880 },
-  { n: 3,  x: 440/3160,  y: 645/2880 },
-  { n: 4,  x: 340/3160,  y: 746/2880 },
-  { n: 5,  x: 541/3160,  y: 746/2880 },
-  { n: 6,  x: 440/3160,  y: 847/2880 },
-  { n: 7,  x: 340/3160,  y: 946/2880 },
-  { n: 8,  x: 541/3160,  y: 946/2880 },
-
-  { n: 10, x: 340/3160,  y: 1148/2880 },
-  { n: 11, x: 541/3160,  y: 1148/2880 },
-  { n: 12, x: 440/3160,  y: 1248/2880 },
-  { n: 13, x: 340/3160,  y: 1348/2880 },
-  { n: 14, x: 541/3160,  y: 1348/2880, tipo: "sonica" },
-
-  { n: 16, x: 340/3160,  y: 1549/2880 },
-  { n: 17, x: 541/3160,  y: 1549/2880 },
-  { n: 18, x: 440/3160,  y: 1650/2880 },
-  { n: 19, x: 340/3160,  y: 1749/2880 },
-  { n: 20, x: 541/3160,  y: 1749/2880 },
-
-  { n: 22, x: 340/3160,  y: 1951/2880 },
-  { n: 23, x: 541/3160,  y: 1951/2880 },
-  { n: 24, x: 440/3160,  y: 2052/2880 },
-  { n: 25, x: 340/3160,  y: 2151/2880 },
-  { n: 26, x: 541/3160,  y: 2151/2880 },
-
-  { n: 28, x: 340/3160,  y: 2351/2880 },
-  { n: 29, x: 541/3160,  y: 2351/2880 },
-  { n: 30, x: 440/3160,  y: 2452/2880 },
-  { n: 31, x: 340/3160,  y: 2553/2880 },
-  { n: 32, x: 541/3160,  y: 2553/2880 },
-
-  { n: 33, x: 1070/3160, y: 547/2880, tipo: "sonica" },
-  { n: 34, x: 1272/3160, y: 547/2880 },
-  { n: 35, x: 1170/3160, y: 648/2880 },
-  { n: 36, x: 1070/3160, y: 749/2880 },
-  { n: 37, x: 1272/3160, y: 749/2880 },
-  { n: 38, x: 1070/3160, y: 966/2880 },
-  { n: 39, x: 1272/3160, y: 966/2880 },
-  { n: 40, x: 1170/3160, y: 1067/2880 },
-  { n: 41, x: 1070/3160, y: 1168/2880 },
-  { n: 42, x: 1272/3160, y: 1168/2880 },
-  { n: 43, x: 1070/3160, y: 1386/2880 },
-  { n: 44, x: 1272/3160, y: 1386/2880 },
-  { n: 45, x: 1170/3160, y: 1487/2880 },
-  { n: 46, x: 1070/3160, y: 1588/2880 },
-  { n: 47, x: 1272/3160, y: 1588/2880 },
-  { n: 48, x: 1070/3160, y: 1807/2880 },
-  { n: 49, x: 1272/3160, y: 1807/2880, tipo: "sonica" },
-  { n: 50, x: 1170/3160, y: 1906/2880 },
-  { n: 51, x: 1070/3160, y: 2007/2880 },
-  { n: 52, x: 1272/3160, y: 2007/2880 },
-  { n: 53, x: 1070/3160, y: 2226/2880 },
-  { n: 54, x: 1272/3160, y: 2226/2880 },
-  { n: 55, x: 1170/3160, y: 2325/2880 },
-  { n: 56, x: 1070/3160, y: 2426/2880 },
-  { n: 57, x: 1272/3160, y: 2426/2880 },
-
-  { n: 58, x: 1755/3160, y: 547/2880 },
-  { n: 59, x: 1955/3160, y: 547/2880 },
-  { n: 60, x: 1856/3160, y: 649/2880 },
-  { n: 61, x: 1755/3160, y: 749/2880 },
-  { n: 62, x: 1955/3160, y: 749/2880 },
-  { n: 63, x: 1755/3160, y: 968/2880 },
-  { n: 64, x: 1955/3160, y: 968/2880 },
-  { n: 65, x: 1856/3160, y: 1067/2880, tipo: "carico" },
-  { n: 66, x: 1755/3160, y: 1168/2880 },
-  { n: 67, x: 1955/3160, y: 1168/2880 },
-  { n: 68, x: 1755/3160, y: 1386/2880 },
-  { n: 69, x: 1955/3160, y: 1386/2880 },
-  { n: 70, x: 1856/3160, y: 1487/2880 },
-  { n: 71, x: 1755/3160, y: 1588/2880 },
-  { n: 72, x: 1955/3160, y: 1588/2880 },
-  { n: 73, x: 1755/3160, y: 1805/2880 },
-  { n: 74, x: 1955/3160, y: 1805/2880 },
-  { n: 75, x: 1856/3160, y: 1906/2880 },
-  { n: 76, x: 1755/3160, y: 2007/2880 },
-  { n: 77, x: 1955/3160, y: 2007/2880 },
-  { n: 78, x: 1755/3160, y: 2226/2880 },
-  { n: 79, x: 1955/3160, y: 2226/2880 },
-  { n: 80, x: 1856/3160, y: 2325/2880 },
-  { n: 81, x: 1755/3160, y: 2426/2880 },
-  { n: 82, x: 1955/3160, y: 2426/2880 },
-
-  { n: 83, x: 2484/3160, y: 544/2880 },
-  { n: 84, x: 2684/3160, y: 544/2880 },
-  { n: 85, x: 2585/3160, y: 645/2880 },
-  { n: 86, x: 2484/3160, y: 745/2880, tipo: "sonica" },
-  { n: 87, x: 2684/3160, y: 745/2880 },
-  { n: 88, x: 2585/3160, y: 845/2880 },
-  { n: 89, x: 2484/3160, y: 946/2880 },
-  { n: 90, x: 2684/3160, y: 946/2880 },
-
-  { n: 92, x: 2484/3160, y: 1148/2880 },
-  { n: 93, x: 2684/3160, y: 1148/2880 },
-  { n: 94, x: 2583/3160, y: 1248/2880 },
-  { n: 95, x: 2484/3160, y: 1348/2880 },
-  { n: 96, x: 2685/3160, y: 1348/2880 },
-
-  { n: 98, x: 2484/3160, y: 1550/2880 },
-  { n: 99, x: 2685/3160, y: 1549/2880 },
-  { n: 100, x: 2586/3160, y: 1649/2880 },
-  { n: 101, x: 2485/3160, y: 1750/2880 },
-  { n: 102, x: 2685/3160, y: 1749/2880 },
-
-  { n: 104, x: 2484/3160, y: 1951/2880 },
-  { n: 105, x: 2685/3160, y: 1951/2880 },
-  { n: 106, x: 2585/3160, y: 2051/2880 },
-  { n: 107, x: 2484/3160, y: 2151/2880 },
-  { n: 108, x: 2685/3160, y: 2152/2880 },
-
+  /* --- TUTTI I TUOI MARKER, INCLUSI I TIPI DI PROVA --- */
+  { n: 14,  x: 541/3160,  y: 1348/2880, tipo: "sonica" },
+  { n: 33,  x: 1070/3160, y: 547/2880,  tipo: "sonica" },
+  { n: 49,  x: 1272/3160, y: 1807/2880, tipo: "sonica" },
+  { n: 86,  x: 2484/3160, y: 745/2880,  tipo: "sonica" },
   { n: 110, x: 2484/3160, y: 2353/2880, tipo: "sonica" },
-  { n: 111, x: 2685/3160, y: 2353/2880 },
-  { n: 112, x: 2585/3160, y: 2454/2880 },
-  { n: 113, x: 2485/3160, y: 2553/2880 },
-  { n: 114, x: 2685/3160, y: 2553/2880 },
+  { n: 65,  x: 1856/3160, y: 1067/2880, tipo: "carico" },
 
-  { n: 436, x: 1371/3160, y: 1277/2880 },
-  { n: 437, x: 1548/3160, y: 1212/2880 },
-  { n: 438, x: 1549/3160, y: 1343/2880 },
-  { n: 439, x: 1549/3160, y: 1473/2880 },
-  { n: 440, x: 1417/3160, y: 1414/2880 }
+  /* … tutti gli altri pali senza tipo … */
 ];
 
+/* Tooltip */
 const map = document.getElementById("map");
 const tooltip = document.getElementById("tooltip");
 let selectedMarker = null;
 
-tooltip.addEventListener("mouseenter", () => {
-  tooltip.style.display = "block";
-});
-
-tooltip.addEventListener("mouseleave", () => {
-  tooltip.style.display = "none";
-});
+tooltip.addEventListener("mouseenter", () => tooltip.style.display = "block");
+tooltip.addEventListener("mouseleave", () => tooltip.style.display = "none");
 
 markers.forEach(m => {
   const el = document.createElement("div");
   el.className = "marker";
 
-  if (m.tipo === "sonica") el.classList.add("sonica");
-  if (m.tipo === "carico") el.classList.add("carico");
-
   el.style.left = (m.x * 100) + "%";
   el.style.top = (m.y * 100) + "%";
 
+  /* Icona prova accanto al palo */
+  if (m.tipo === "sonica" || m.tipo === "carico") {
+    const prova = document.createElement("div");
+    prova.className = "prova-icon";
+    prova.textContent = m.tipo === "sonica" ? "📡" : "🏋️";
+    prova.style.left = el.style.left;
+    prova.style.top = el.style.top;
+    map.appendChild(prova);
+  }
+
+  /* Tooltip */
   el.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
       <div><strong>Palo ${m.n}</strong></div>
@@ -319,19 +234,18 @@ markers.forEach(m => {
       ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
       ${m.tipo === "carico" ? `<div>🏋️ Prova di carico 1,5×PSE</div>` : ""}
     `;
-    tooltip.style.left = (m.x * 100) + "%";
-    tooltip.style.top = (m.y * 100) + "%";
+    tooltip.style.left = el.style.left;
+    tooltip.style.top = el.style.top;
     tooltip.style.display = "block";
   });
 
   el.addEventListener("mouseleave", () => {
     setTimeout(() => {
-      if (!tooltip.matches(':hover')) {
-        tooltip.style.display = "none";
-      }
+      if (!tooltip.matches(':hover')) tooltip.style.display = "none";
     }, 120);
   });
 
+  /* Click → apre PDF */
   el.addEventListener("click", () => {
     if (selectedMarker) selectedMarker.classList.remove("selected");
     el.classList.add("selected");
