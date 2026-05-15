@@ -20,14 +20,24 @@
 
     .marker {
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       cursor: pointer;
       border: 2px solid #fff;
       user-select: none;
       background: #00aaff;
+    }
+
+    .marker.sonica {
+      background: #ff6600 !important; /* arancione */
+      border: 2px solid #fff;
+    }
+
+    .marker.carico {
+      background: #ffff00 !important; /* giallo */
+      border: 2px solid #000;
     }
 
     .selected {
@@ -132,6 +142,14 @@
     <span class="icon">🟠</span>
     <span>Documento Qualità (QLT)</span>
   </div>
+  <div class="item">
+    <span class="icon">📡</span>
+    <span>Prova sonica "cross-hole"</span>
+  </div>
+  <div class="item">
+    <span class="icon">🏋️</span>
+    <span>Prova di carico 1,5×PSE</span>
+  </div>
 </div>
 
 <div class="map-container" id="map">
@@ -140,19 +158,10 @@
 </div>
 
 <script>
-
-/* ============================
-   FUNZIONI LEGGENDA
-   ============================ */
-
 function toggleLegend() {
   const panel = document.getElementById("legendPanel");
   panel.style.display = (panel.style.display === "block") ? "none" : "block";
 }
-
-/* ============================
-   ARRAY PALI CONTROL BUILDING
-   ============================ */
 
 const markers = [
   { n: 1,  x: 340/3160,  y: 544/2880 },
@@ -168,7 +177,7 @@ const markers = [
   { n: 11, x: 541/3160,  y: 1148/2880 },
   { n: 12, x: 440/3160,  y: 1248/2880 },
   { n: 13, x: 340/3160,  y: 1348/2880 },
-  { n: 14,  x: 541/3160,  y: 1348/2880, tipo: "sonica" },
+  { n: 14, x: 541/3160,  y: 1348/2880, tipo: "sonica" },
 
   { n: 16, x: 340/3160,  y: 1549/2880 },
   { n: 17, x: 541/3160,  y: 1549/2880 },
@@ -188,7 +197,7 @@ const markers = [
   { n: 31, x: 340/3160,  y: 2553/2880 },
   { n: 32, x: 541/3160,  y: 2553/2880 },
 
-  { n: 33,  x: 1070/3160, y: 547/2880,  tipo: "sonica" },
+  { n: 33, x: 1070/3160, y: 547/2880, tipo: "sonica" },
   { n: 34, x: 1272/3160, y: 547/2880 },
   { n: 35, x: 1170/3160, y: 648/2880 },
   { n: 36, x: 1070/3160, y: 749/2880 },
@@ -204,7 +213,7 @@ const markers = [
   { n: 46, x: 1070/3160, y: 1588/2880 },
   { n: 47, x: 1272/3160, y: 1588/2880 },
   { n: 48, x: 1070/3160, y: 1807/2880 },
-  { n: 49,  x: 1272/3160, y: 1807/2880, tipo: "sonica" },
+  { n: 49, x: 1272/3160, y: 1807/2880, tipo: "sonica" },
   { n: 50, x: 1170/3160, y: 1906/2880 },
   { n: 51, x: 1070/3160, y: 2007/2880 },
   { n: 52, x: 1272/3160, y: 2007/2880 },
@@ -243,7 +252,7 @@ const markers = [
   { n: 83, x: 2484/3160, y: 544/2880 },
   { n: 84, x: 2684/3160, y: 544/2880 },
   { n: 85, x: 2585/3160, y: 645/2880 },
-  { n: 86,  x: 2484/3160, y: 745/2880,  tipo: "sonica" },
+  { n: 86, x: 2484/3160, y: 745/2880, tipo: "sonica" },
   { n: 87, x: 2684/3160, y: 745/2880 },
   { n: 88, x: 2585/3160, y: 845/2880 },
   { n: 89, x: 2484/3160, y: 946/2880 },
@@ -280,13 +289,8 @@ const markers = [
   { n: 440, x: 1417/3160, y: 1414/2880 }
 ];
 
-/* ============================
-   CREAZIONE MARKER
-   ============================ */
-
 const map = document.getElementById("map");
 const tooltip = document.getElementById("tooltip");
-
 let selectedMarker = null;
 
 tooltip.addEventListener("mouseenter", () => {
@@ -296,32 +300,25 @@ tooltip.addEventListener("mouseenter", () => {
 tooltip.addEventListener("mouseleave", () => {
   tooltip.style.display = "none";
 });
-.marker.sonica {
-  background: #ff6600 !important; /* arancione */
-  border: 2px solid #fff;
-}  
-.marker.carico {
-  background: #ffff00 !important; /* giallo */
-  border: 2px solid #000;
-}
+
 markers.forEach(m => {
   const el = document.createElement("div");
-
   el.className = "marker";
- if (m.tipo === "sonica") el.classList.add("sonica");
-if (m.tipo === "carico") el.classList.add("carico");
+
+  if (m.tipo === "sonica") el.classList.add("sonica");
+  if (m.tipo === "carico") el.classList.add("carico");
 
   el.style.left = (m.x * 100) + "%";
   el.style.top = (m.y * 100) + "%";
 
   el.addEventListener("mouseenter", () => {
-  tooltip.innerHTML = `
-  <div><strong>Palo ${m.n}</strong></div>
-  <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
-  <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
-  ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
-  ${m.tipo === "carico" ? `<div>🏋️ Prova di carico 1,5×PSE</div>` : ""}
-`;
+    tooltip.innerHTML = `
+      <div><strong>Palo ${m.n}</strong></div>
+      <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
+      <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
+      ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
+      ${m.tipo === "carico" ? `<div>🏋️ Prova di carico 1,5×PSE</div>` : ""}
+    `;
     tooltip.style.left = (m.x * 100) + "%";
     tooltip.style.top = (m.y * 100) + "%";
     tooltip.style.display = "block";
@@ -339,13 +336,11 @@ if (m.tipo === "carico") el.classList.add("carico");
     if (selectedMarker) selectedMarker.classList.remove("selected");
     el.classList.add("selected");
     selectedMarker = el;
-
     window.open(`pdf/P${m.n}.pdf`, "_blank");
   });
 
   map.appendChild(el);
 });
-
 </script>
 
 </body>
