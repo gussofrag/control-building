@@ -168,7 +168,7 @@ const markers = [
   { n: 11, x: 541/3160,  y: 1148/2880 },
   { n: 12, x: 440/3160,  y: 1248/2880 },
   { n: 13, x: 340/3160,  y: 1348/2880 },
-  { n: 14, x: 541/3160,  y: 1348/2880 },
+  { n: 14,  x: 541/3160,  y: 1348/2880, tipo: "sonica" },
 
   { n: 16, x: 340/3160,  y: 1549/2880 },
   { n: 17, x: 541/3160,  y: 1549/2880 },
@@ -188,7 +188,7 @@ const markers = [
   { n: 31, x: 340/3160,  y: 2553/2880 },
   { n: 32, x: 541/3160,  y: 2553/2880 },
 
-  { n: 33, x: 1070/3160, y: 547/2880 },
+  { n: 33,  x: 1070/3160, y: 547/2880,  tipo: "sonica" },
   { n: 34, x: 1272/3160, y: 547/2880 },
   { n: 35, x: 1170/3160, y: 648/2880 },
   { n: 36, x: 1070/3160, y: 749/2880 },
@@ -204,7 +204,7 @@ const markers = [
   { n: 46, x: 1070/3160, y: 1588/2880 },
   { n: 47, x: 1272/3160, y: 1588/2880 },
   { n: 48, x: 1070/3160, y: 1807/2880 },
-  { n: 49, x: 1272/3160, y: 1807/2880 },
+  { n: 49,  x: 1272/3160, y: 1807/2880, tipo: "sonica" },
   { n: 50, x: 1170/3160, y: 1906/2880 },
   { n: 51, x: 1070/3160, y: 2007/2880 },
   { n: 52, x: 1272/3160, y: 2007/2880 },
@@ -243,7 +243,7 @@ const markers = [
   { n: 83, x: 2484/3160, y: 544/2880 },
   { n: 84, x: 2684/3160, y: 544/2880 },
   { n: 85, x: 2585/3160, y: 645/2880 },
-  { n: 86, x: 2484/3160, y: 745/2880 },
+  { n: 86,  x: 2484/3160, y: 745/2880,  tipo: "sonica" },
   { n: 87, x: 2684/3160, y: 745/2880 },
   { n: 88, x: 2585/3160, y: 845/2880 },
   { n: 89, x: 2484/3160, y: 946/2880 },
@@ -267,7 +267,7 @@ const markers = [
   { n: 107, x: 2484/3160, y: 2151/2880 },
   { n: 108, x: 2685/3160, y: 2152/2880 },
 
-  { n: 110, x: 2484/3160, y: 2353/2880 },
+  { n: 110, x: 2484/3160, y: 2353/2880, tipo: "sonica" },
   { n: 111, x: 2685/3160, y: 2353/2880 },
   { n: 112, x: 2585/3160, y: 2454/2880 },
   { n: 113, x: 2485/3160, y: 2553/2880 },
@@ -296,21 +296,26 @@ tooltip.addEventListener("mouseenter", () => {
 tooltip.addEventListener("mouseleave", () => {
   tooltip.style.display = "none";
 });
-
+.marker.sonica {
+  background: #ff6600 !important; /* arancione */
+  border: 2px solid #fff;
+}
 markers.forEach(m => {
   const el = document.createElement("div");
 
   el.className = "marker";
+  if (m.tipo === "sonica") el.classList.add("sonica");
 
   el.style.left = (m.x * 100) + "%";
   el.style.top = (m.y * 100) + "%";
 
   el.addEventListener("mouseenter", () => {
-    tooltip.innerHTML = `
-      <div><strong>Palo ${m.n}</strong></div>
-      <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale
-      <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
-    `;
+   tooltip.innerHTML = `
+  <div><strong>Palo ${m.n}</strong></div>
+  <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
+  <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
+  ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
+`;
     tooltip.style.left = (m.x * 100) + "%";
     tooltip.style.top = (m.y * 100) + "%";
     tooltip.style.display = "block";
