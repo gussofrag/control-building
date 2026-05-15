@@ -18,6 +18,7 @@
       display: block;
     }
 
+    /* Marker blu */
     .marker {
       position: absolute;
       width: 12px;
@@ -63,6 +64,42 @@
 
     .tooltip a:hover {
       text-decoration: underline;
+    }
+
+    /* CROCE rossa sui pali scapitozzati (solo quando filtro attivo) */
+    .marker.scapitozzato-attivo::before {
+      content: "✚";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: red;
+      font-weight: 900;
+      pointer-events: none;
+      text-shadow: 0 0 4px black, 0 0 6px black, 0 0 8px black;
+      z-index: 9999;
+    }
+
+    /* Icone prove */
+    .marker.prova-carico::after {
+      content: "🏋️";
+      position: absolute;
+      top: 50%;
+      left: -26px;
+      transform: translateY(-50%);
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .marker.prova-sonica::after {
+      content: "📡";
+      position: absolute;
+      top: 50%;
+      left: -26px;
+      transform: translateY(-50%);
+      font-size: 20px;
+      pointer-events: none;
     }
 
     .legend-button {
@@ -115,60 +152,63 @@
       margin-right: 8px;
     }
 
+    /* Pulsante Home */
     .home-button {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: rgba(0,0,0,0.55);
-      padding: 6px 12px;
-      border-radius: 4px;
-      border: 2px solid #fff;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      font-size: 20px;
-      color: #ffffff;
-      cursor: pointer;
+      background: rgba(0,0,0,0.75);
+      padding: 10px;
+      border-radius: 50%;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
       z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
       transition: 0.2s;
-      user-select: none;
+      cursor: pointer;
     }
 
     .home-button:hover {
       background: rgba(0,0,0,0.9);
-    }
-
-    .prova-icon {
-      position: absolute;
-      font-size: 20px;
-      transform: translate(-160%, -50%);
-      pointer-events: none;
-      z-index: 25;
     }
   </style>
 </head>
 
 <body>
 
-<div class="home-button" onclick="location.href='https://gussofrag.github.io/'" title="Torna alla Home">
-  🏠
+<div class="legend-button" onclick="toggleLegend()" title="Apri legenda">
+  Legenda prove sui pali
 </div>
 
-<div class="legend-button" onclick="toggleLegend()" title="Apri legenda">
-  Legenda pali
+<div class="legend-button" onclick="toggleScapitozzati()" style="top: 60px; right: 180px;">
+  ⛏️ Pali scapitozzati
 </div>
 
 <div id="legendPanel" class="legend-panel">
   <div class="item">
-    <span class="icon">📡</span>
-    <span>Prova sonica "cross-hole"</span>
-  </div>
-  <div class="item">
     <span class="icon">🏋️</span>
     <span>Prova di carico 1,5×PSE</span>
   </div>
+
+  <div class="item">
+    <span class="icon">📡</span>
+    <span>Prova sonica “cross-hole”</span>
+  </div>
 </div>
 
+<a href="https://gussofrag.github.io/Key-Plant/"
+   class="home-button"
+   title="Torna alla Key Plant">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+    <path d="M3 10.5L12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10.5z"/>
+  </svg>
+</a>
+
 <div class="map-container" id="map">
-  <img src="img/pianta_pali_control_building.jpg" alt="Mappa pali Control Building">
+  <img src="img/pianta_pali_control_building.jpg">
   <div id="tooltip" class="tooltip"></div>
 </div>
 
@@ -178,7 +218,33 @@ function toggleLegend() {
   panel.style.display = (panel.style.display === "block") ? "none" : "block";
 }
 
+let filterScapitozzati = false;
+
+function toggleScapitozzati() {
+  filterScapitozzati = !filterScapitozzati;
+
+  document.querySelectorAll('.marker').forEach(marker => {
+    const isScapitozzato = marker.dataset.scapitozzato === "true";
+
+    if (filterScapitozzati) {
+      if (isScapitozzato) {
+        marker.style.display = "block";
+        marker.classList.add("scapitozzato-attivo");
+      } else {
+        marker.style.display = "none";
+      }
+    } else {
+      marker.style.display = "block";
+      marker.classList.remove("scapitozzato-attivo");
+    }
+  });
+}
+
 const markers = [
+  /* Soniche: 14, 33, 49, 86, 110 */
+  /* Carico: 65 */
+  /* Scapitozzati: li aggiungerai tu con scapitozzato: true */
+
   { n: 1,  x: 340/3160,  y: 544/2880 },
   { n: 2,  x: 541/3160,  y: 544/2880 },
   { n: 3,  x: 440/3160,  y: 645/2880 },
@@ -192,7 +258,7 @@ const markers = [
   { n: 11, x: 541/3160,  y: 1148/2880 },
   { n: 12, x: 440/3160,  y: 1248/2880 },
   { n: 13, x: 340/3160,  y: 1348/2880 },
-  { n: 14, x: 541/3160,  y: 1348/2880, tipo: "sonica" },
+  { n: 14, x: 541/3160,  y: 1348/2880, prova: "sonica" },
 
   { n: 16, x: 340/3160,  y: 1549/2880 },
   { n: 17, x: 541/3160,  y: 1549/2880 },
@@ -212,7 +278,7 @@ const markers = [
   { n: 31, x: 340/3160,  y: 2553/2880 },
   { n: 32, x: 541/3160,  y: 2553/2880 },
 
-  { n: 33, x: 1070/3160, y: 547/2880, tipo: "sonica" },
+  { n: 33, x: 1070/3160, y: 547/2880, prova: "sonica" },
   { n: 34, x: 1272/3160, y: 547/2880 },
   { n: 35, x: 1170/3160, y: 648/2880 },
   { n: 36, x: 1070/3160, y: 749/2880 },
@@ -228,7 +294,7 @@ const markers = [
   { n: 46, x: 1070/3160, y: 1588/2880 },
   { n: 47, x: 1272/3160, y: 1588/2880 },
   { n: 48, x: 1070/3160, y: 1807/2880 },
-  { n: 49, x: 1272/3160, y: 1807/2880, tipo: "sonica" },
+  { n: 49, x: 1272/3160, y: 1807/2880, prova: "sonica" },
   { n: 50, x: 1170/3160, y: 1906/2880 },
   { n: 51, x: 1070/3160, y: 2007/2880 },
   { n: 52, x: 1272/3160, y: 2007/2880 },
@@ -245,7 +311,7 @@ const markers = [
   { n: 62, x: 1955/3160, y: 749/2880 },
   { n: 63, x: 1755/3160, y: 968/2880 },
   { n: 64, x: 1955/3160, y: 968/2880 },
-  { n: 65, x: 1856/3160, y: 1067/2880, tipo: "carico" },
+  { n: 65, x: 1856/3160, y: 1067/2880, prova: "carico" },
   { n: 66, x: 1755/3160, y: 1168/2880 },
   { n: 67, x: 1955/3160, y: 1168/2880 },
   { n: 68, x: 1755/3160, y: 1386/2880 },
@@ -267,7 +333,7 @@ const markers = [
   { n: 83, x: 2484/3160, y: 544/2880 },
   { n: 84, x: 2684/3160, y: 544/2880 },
   { n: 85, x: 2585/3160, y: 645/2880 },
-  { n: 86, x: 2484/3160, y: 745/2880, tipo: "sonica" },
+  { n: 86, x: 2484/3160, y: 745/2880, prova: "sonica" },
   { n: 87, x: 2684/3160, y: 745/2880 },
   { n: 88, x: 2585/3160, y: 845/2880 },
   { n: 89, x: 2484/3160, y: 946/2880 },
@@ -291,7 +357,7 @@ const markers = [
   { n: 107, x: 2484/3160, y: 2151/2880 },
   { n: 108, x: 2685/3160, y: 2152/2880 },
 
-  { n: 110, x: 2484/3160, y: 2353/2880, tipo: "sonica" },
+  { n: 110, x: 2484/3160, y: 2353/2880, prova: "sonica" },
   { n: 111, x: 2685/3160, y: 2353/2880 },
   { n: 112, x: 2585/3160, y: 2454/2880 },
   { n: 113, x: 2485/3160, y: 2553/2880 },
@@ -318,30 +384,26 @@ tooltip.addEventListener("mouseleave", () => {
 
 markers.forEach(m => {
   const el = document.createElement("div");
+
+  // scapitozzato: lo aggiungerai tu (scapitozzato: true)
+  el.dataset.scapitozzato = m.scapitozzato ? "true" : "false";
+
   el.className = "marker";
+
+  if (m.prova === "carico") el.classList.add("prova-carico");
+  if (m.prova === "sonica") el.classList.add("prova-sonica");
 
   el.style.left = (m.x * 100) + "%";
   el.style.top = (m.y * 100) + "%";
 
-  if (m.tipo === "sonica" || m.tipo === "carico") {
-    const prova = document.createElement("div");
-    prova.className = "prova-icon";
-    prova.textContent = m.tipo === "sonica" ? "📡" : "🏋️";
-    prova.style.left = el.style.left;
-    prova.style.top = el.style.top;
-    map.appendChild(prova);
-  }
-
   el.addEventListener("mouseenter", () => {
     tooltip.innerHTML = `
       <div><strong>Palo ${m.n}</strong></div>
-      <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
+      <a href="pdf/P_${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
       <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
-      ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
-      ${m.tipo === "carico" ? `<div>🏋️ Prova di carico 1,5×PSE</div>` : ""}
     `;
-    tooltip.style.left = el.style.left;
-    tooltip.style.top = el.style.top;
+    tooltip.style.left = (m.x * 100) + "%";
+    tooltip.style.top = (m.y * 100) + "%";
     tooltip.style.display = "block";
   });
 
@@ -357,7 +419,7 @@ markers.forEach(m => {
     if (selectedMarker) selectedMarker.classList.remove("selected");
     el.classList.add("selected");
     selectedMarker = el;
-    window.open(`pdf/P${m.n}.pdf`, "_blank");
+    window.open(`pdf/P_${m.n}.pdf`, "_blank");
   });
 
   map.appendChild(el);
