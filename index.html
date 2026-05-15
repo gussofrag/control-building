@@ -299,22 +299,28 @@ tooltip.addEventListener("mouseleave", () => {
 .marker.sonica {
   background: #ff6600 !important; /* arancione */
   border: 2px solid #fff;
+}  
+.marker.carico {
+  background: #ffff00 !important; /* giallo */
+  border: 2px solid #000;
 }
 markers.forEach(m => {
   const el = document.createElement("div");
 
   el.className = "marker";
-  if (m.tipo === "sonica") el.classList.add("sonica");
+ if (m.tipo === "sonica") el.classList.add("sonica");
+if (m.tipo === "carico") el.classList.add("carico");
 
   el.style.left = (m.x * 100) + "%";
   el.style.top = (m.y * 100) + "%";
 
   el.addEventListener("mouseenter", () => {
-   tooltip.innerHTML = `
+  tooltip.innerHTML = `
   <div><strong>Palo ${m.n}</strong></div>
   <a href="pdf/P${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
   <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
   ${m.tipo === "sonica" ? `<div>📡 Prova sonica "cross-hole"</div>` : ""}
+  ${m.tipo === "carico" ? `<div>🏋️ Prova di carico 1,5×PSE</div>` : ""}
 `;
     tooltip.style.left = (m.x * 100) + "%";
     tooltip.style.top = (m.y * 100) + "%";
