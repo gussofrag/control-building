@@ -2,27 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <title>Mappa pali Control Building</title>
+  <title>Mappa pali Control Building (CB)</title>
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-    }
-
-    .wrapper {
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
-
     .map-container {
       position: relative;
-      background: #ddd;
-      border: 1px solid #999;
+      width: 100%;
       max-width: 100%;
-      overflow: visible;
+      height: auto;
     }
 
     .map-container img {
@@ -33,38 +20,159 @@
 
     .marker {
       position: absolute;
-      width: 18px;
-      height: 18px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: #00aaff;
-      border: 2px solid #fff;
-      box-shadow: 0 0 4px rgba(0,0,0,0.5);
-      cursor: pointer;
       transform: translate(-50%, -50%);
+      cursor: pointer;
+      border: 2px solid #fff;
+      user-select: none;
+      background: #00aaff; /* colore base CB, modificabile */
     }
 
-    .marker:hover {
-      background: #0077cc;
+    .selected {
+      width: 28px !important;
+      height: 28px !important;
+      border: 3px solid yellow !important;
+      z-index: 20;
     }
 
     .tooltip {
       position: absolute;
-      padding: 4px 8px;
-      background: rgba(0,0,0,0.8);
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.85);
       color: #fff;
-      font-size: 12px;
-      border-radius: 3px;
-      pointer-events: none;
-      transform: translate(-50%, -120%);
+      font-size: 15px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-weight: 500;
+      border-radius: 6px;
       white-space: nowrap;
+      transform: translate(-50%, -120%);
+      pointer-events: auto;
       display: none;
-      z-index: 10;
+      z-index: 30;
+    }
+
+    .tooltip a {
+      color: #66ccff;
+      text-decoration: none;
+      font-weight: 600;
+      display: block;
+      margin: 3px 0;
+    }
+
+    .tooltip a:hover {
+      text-decoration: underline;
+    }
+
+    .marker.scapitozzato-attivo::before {
+      content: "✚";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      color: red;
+      font-weight: 900;
+      pointer-events: none;
+      text-shadow: 0 0 4px black, 0 0 6px black, 0 0 8px black;
+      z-index: 9999;
+    }
+
+    .marker.prova-carico::after {
+      content: "🏋️";
+      position: absolute;
+      top: 50%;
+      left: -26px;
+      transform: translateY(-50%);
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .marker.prova-sonica::after {
+      content: "📡";
+      position: absolute;
+      top: 50%;
+      left: -26px;
+      transform: translateY(-50%);
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .legend-button {
+      position: fixed;
+      top: 20px;
+      right: 180px;
+      background: rgba(0,0,0,0.55);
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 2px solid red;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 15px;
+      color: #ffffff;
+      cursor: pointer;
+      z-index: 9999;
+      transition: 0.2s;
+      user-select: text;
+    }
+
+    .legend-button:hover {
+      background: rgba(0,0,0,0.9);
+    }
+
+    .legend-panel {
+      position: fixed;
+      top: 75px;
+      right: 20px;
+      width: 220px;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      z-index: 9998;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
+      display: none;
+    }
+
+    .legend-panel .item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .legend-panel .item span.icon {
+      font-size: 18px;
+      margin-right: 8px;
     }
   </style>
 </head>
 
 <body>
-  <!-- 🔵 PULSANTE CASETTA (TORNA ALLA KEY PLANT) -->
+
+<div class="legend-button" onclick="toggleLegend()" title="Apri legenda">
+  Legenda prove sui pali
+</div>
+
+<div class="legend-button" onclick="toggleScapitozzati()" style="top: 60px; right: 180px;">
+  ⛏️ Pali scapitozzati
+</div>
+
+<div id="legendPanel" class="legend-panel">
+  <!-- Per ora CB non ha prove specifiche: puoi compilarle qui se servono -->
+  <div class="item">
+    <span class="icon">🏋️</span>
+    <span>Prove di carico (se presenti)</span>
+  </div>
+  <div class="item">
+    <span class="icon">📡</span>
+    <span>Prove soniche (se presenti)</span>
+  </div>
+</div>
+
 <a href="https://gussofrag.github.io/Key-Plant/"
    style="
      position: fixed;
@@ -74,7 +182,7 @@
      padding: 10px;
      border-radius: 50%;
      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-     z-index: 999999;
+     z-index: 9999;
      display: flex;
      align-items: center;
      justify-content: center;
@@ -83,8 +191,6 @@
      transition: 0.2s;
      cursor: pointer;
    "
-   onmouseover="this.style.background='rgba(0,0,0,0.9)'"
-   onmouseout="this.style.background='rgba(0,0,0,0.75)'"
    title="Torna alla Key Plant">
 
   <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
@@ -92,192 +198,238 @@
   </svg>
 
 </a>
-<!-- 🔵 FINE PULSANTE CASETTA -->
 
-  <div class="wrapper">
-    <div class="map-container" id="map">
-      <img src="img/pianta_pali_control_building.jpg" alt="Mappa pali Control Building" id="mapImage" />
-      <div id="tooltip" class="tooltip"></div>
-    </div>
-  </div>
+<div class="map-container" id="map">
+  <img src="img/pianta_pali_control_building.jpg" alt="Mappa pali Control Building">
+  <div id="tooltip" class="tooltip"></div>
+</div>
+/* ============================
+   ARRAY PALI CONTROL BUILDING
+   ============================ */
 
-  <script>
-    const markers = [
-      /* --- Pali 1–32 --- */
-      { id: "Palo 1", x: 340, y: 544, pdf: "pdf/P1.pdf" },
-{ id: "Palo 2", x: 541, y: 544, pdf: "pdf/P2.pdf" },
-{ id: "Palo 3", x: 440, y: 645, pdf: "pdf/P3.pdf" },
-{ id: "Palo 4", x: 340, y: 746, pdf: "pdf/P4.pdf" },
-{ id: "Palo 5", x: 541, y: 746, pdf: "pdf/P5.pdf" },
-{ id: "Palo 6", x: 440, y: 847, pdf: "pdf/P6.pdf" },
-{ id: "Palo 7", x: 340, y: 946, pdf: "pdf/P7.pdf" },
-{ id: "Palo 8", x: 541, y: 946, pdf: "pdf/P8.pdf" },
+const markers = [
+  /* --- Pali 1–32 --- */
+  { n: 1,  x: 340/3160,  y: 544/2880 },
+  { n: 2,  x: 541/3160,  y: 544/2880 },
+  { n: 3,  x: 440/3160,  y: 645/2880 },
+  { n: 4,  x: 340/3160,  y: 746/2880 },
+  { n: 5,  x: 541/3160,  y: 746/2880 },
+  { n: 6,  x: 440/3160,  y: 847/2880 },
+  { n: 7,  x: 340/3160,  y: 946/2880 },
+  { n: 8,  x: 541/3160,  y: 946/2880 },
 
-{ id: "Palo 10", x: 340, y: 1148, pdf: "pdf/P10.pdf" },
-{ id: "Palo 11", x: 541, y: 1148, pdf: "pdf/P11.pdf" },
-{ id: "Palo 12", x: 440, y: 1248, pdf: "pdf/P12.pdf" },
-{ id: "Palo 13", x: 340, y: 1348, pdf: "pdf/P13.pdf" },
-{ id: "Palo 14", x: 541, y: 1348, pdf: "pdf/P14.pdf" },
+  { n: 10, x: 340/3160,  y: 1148/2880 },
+  { n: 11, x: 541/3160,  y: 1148/2880 },
+  { n: 12, x: 440/3160,  y: 1248/2880 },
+  { n: 13, x: 340/3160,  y: 1348/2880 },
+  { n: 14, x: 541/3160,  y: 1348/2880 },
 
-{ id: "Palo 16", x: 340, y: 1549, pdf: "pdf/P16.pdf" },
-{ id: "Palo 17", x: 541, y: 1549, pdf: "pdf/P17.pdf" },
-{ id: "Palo 18", x: 440, y: 1650, pdf: "pdf/P18.pdf" },
-{ id: "Palo 19", x: 340, y: 1749, pdf: "pdf/P19.pdf" },
-{ id: "Palo 20", x: 541, y: 1749, pdf: "pdf/P20.pdf" },
+  { n: 16, x: 340/3160,  y: 1549/2880 },
+  { n: 17, x: 541/3160,  y: 1549/2880 },
+  { n: 18, x: 440/3160,  y: 1650/2880 },
+  { n: 19, x: 340/3160,  y: 1749/2880 },
+  { n: 20, x: 541/3160,  y: 1749/2880 },
 
-{ id: "Palo 22", x: 340, y: 1951, pdf: "pdf/P22.pdf" },
-{ id: "Palo 23", x: 541, y: 1951, pdf: "pdf/P23.pdf" },
-{ id: "Palo 24", x: 440, y: 2052, pdf: "pdf/P24.pdf" },
-{ id: "Palo 25", x: 340, y: 2151, pdf: "pdf/P25.pdf" },
-{ id: "Palo 26", x: 541, y: 2151, pdf: "pdf/P26.pdf" },
+  { n: 22, x: 340/3160,  y: 1951/2880 },
+  { n: 23, x: 541/3160,  y: 1951/2880 },
+  { n: 24, x: 440/3160,  y: 2052/2880 },
+  { n: 25, x: 340/3160,  y: 2151/2880 },
+  { n: 26, x: 541/3160,  y: 2151/2880 },
 
-{ id: "Palo 28", x: 340, y: 2351, pdf: "pdf/P28.pdf" },
-{ id: "Palo 29", x: 541, y: 2351, pdf: "pdf/P29.pdf" },
-{ id: "Palo 30", x: 440, y: 2452, pdf: "pdf/P30.pdf" },
-{ id: "Palo 31", x: 340, y: 2553, pdf: "pdf/P31.pdf" },
-{ id: "Palo 32", x: 541, y: 2553, pdf: "pdf/P32.pdf" },
+  { n: 28, x: 340/3160,  y: 2351/2880 },
+  { n: 29, x: 541/3160,  y: 2351/2880 },
+  { n: 30, x: 440/3160,  y: 2452/2880 },
+  { n: 31, x: 340/3160,  y: 2553/2880 },
+  { n: 32, x: 541/3160,  y: 2553/2880 },
 
-      /* --- Pali 33–57 --- */
-      { id: "Palo 33", x: 1070, y: 547, pdf: "pdf/P33.pdf" },
-{ id: "Palo 34", x: 1272, y: 547, pdf: "pdf/P34.pdf" },
-{ id: "Palo 35", x: 1170, y: 648, pdf: "pdf/P35.pdf" },
-{ id: "Palo 36", x: 1070, y: 749, pdf: "pdf/P36.pdf" },
-{ id: "Palo 37", x: 1272, y: 749, pdf: "pdf/P37.pdf" },
-{ id: "Palo 38", x: 1070, y: 966, pdf: "pdf/P38.pdf" },
-{ id: "Palo 39", x: 1272, y: 966, pdf: "pdf/P39.pdf" },
-{ id: "Palo 40", x: 1170, y: 1067, pdf: "pdf/P40.pdf" },
-{ id: "Palo 41", x: 1070, y: 1168, pdf: "pdf/P41.pdf" },
-{ id: "Palo 42", x: 1272, y: 1168, pdf: "pdf/P42.pdf" },
-{ id: "Palo 43", x: 1070, y: 1386, pdf: "pdf/P43.pdf" },
-{ id: "Palo 44", x: 1272, y: 1386, pdf: "pdf/P44.pdf" },
-{ id: "Palo 45", x: 1170, y: 1487, pdf: "pdf/P45.pdf" },
-{ id: "Palo 46", x: 1070, y: 1588, pdf: "pdf/P46.pdf" },
-{ id: "Palo 47", x: 1272, y: 1588, pdf: "pdf/P47.pdf" },
-{ id: "Palo 48", x: 1070, y: 1807, pdf: "pdf/P48.pdf" },
-{ id: "Palo 49", x: 1272, y: 1807, pdf: "pdf/P49.pdf" },
-{ id: "Palo 50", x: 1170, y: 1906, pdf: "pdf/P50.pdf" },
-{ id: "Palo 51", x: 1070, y: 2007, pdf: "pdf/P51.pdf" },
-{ id: "Palo 52", x: 1272, y: 2007, pdf: "pdf/P52.pdf" },
-{ id: "Palo 53", x: 1070, y: 2226, pdf: "pdf/P53.pdf" },
-{ id: "Palo 54", x: 1272, y: 2226, pdf: "pdf/P54.pdf" },
-{ id: "Palo 55", x: 1170, y: 2325, pdf: "pdf/P55.pdf" },
-{ id: "Palo 56", x: 1070, y: 2426, pdf: "pdf/P56.pdf" },
-{ id: "Palo 57", x: 1272, y: 2426, pdf: "pdf/P57.pdf" },
+  /* --- Pali 33–57 --- */
+  { n: 33, x: 1070/3160, y: 547/2880 },
+  { n: 34, x: 1272/3160, y: 547/2880 },
+  { n: 35, x: 1170/3160, y: 648/2880 },
+  { n: 36, x: 1070/3160, y: 749/2880 },
+  { n: 37, x: 1272/3160, y: 749/2880 },
+  { n: 38, x: 1070/3160, y: 966/2880 },
+  { n: 39, x: 1272/3160, y: 966/2880 },
+  { n: 40, x: 1170/3160, y: 1067/2880 },
+  { n: 41, x: 1070/3160, y: 1168/2880 },
+  { n: 42, x: 1272/3160, y: 1168/2880 },
+  { n: 43, x: 1070/3160, y: 1386/2880 },
+  { n: 44, x: 1272/3160, y: 1386/2880 },
+  { n: 45, x: 1170/3160, y: 1487/2880 },
+  { n: 46, x: 1070/3160, y: 1588/2880 },
+  { n: 47, x: 1272/3160, y: 1588/2880 },
+  { n: 48, x: 1070/3160, y: 1807/2880 },
+  { n: 49, x: 1272/3160, y: 1807/2880 },
+  { n: 50, x: 1170/3160, y: 1906/2880 },
+  { n: 51, x: 1070/3160, y: 2007/2880 },
+  { n: 52, x: 1272/3160, y: 2007/2880 },
+  { n: 53, x: 1070/3160, y: 2226/2880 },
+  { n: 54, x: 1272/3160, y: 2226/2880 },
+  { n: 55, x: 1170/3160, y: 2325/2880 },
+  { n: 56, x: 1070/3160, y: 2426/2880 },
+  { n: 57, x: 1272/3160, y: 2426/2880 },
 
-      /* --- Pali 58–82 --- */
-      { id: "Palo 58", x: 1755, y: 547, pdf: "pdf/P58.pdf" },
-{ id: "Palo 59", x: 1955, y: 547, pdf: "pdf/P59.pdf" },
-{ id: "Palo 60", x: 1856, y: 649, pdf: "pdf/P60.pdf" },
-{ id: "Palo 61", x: 1755, y: 749, pdf: "pdf/P61.pdf" },
-{ id: "Palo 62", x: 1955, y: 749, pdf: "pdf/P62.pdf" },
-{ id: "Palo 63", x: 1755, y: 968, pdf: "pdf/P63.pdf" },
-{ id: "Palo 64", x: 1955, y: 968, pdf: "pdf/P64.pdf" },
-{ id: "Palo 65", x: 1856, y: 1067, pdf: "pdf/P65.pdf" },
-{ id: "Palo 66", x: 1755, y: 1168, pdf: "pdf/P66.pdf" },
-{ id: "Palo 67", x: 1955, y: 1168, pdf: "pdf/P67.pdf" },
-{ id: "Palo 68", x: 1755, y: 1386, pdf: "pdf/P68.pdf" },
-{ id: "Palo 69", x: 1955, y: 1386, pdf: "pdf/P69.pdf" },
-{ id: "Palo 70", x: 1856, y: 1487, pdf: "pdf/P70.pdf" },
-{ id: "Palo 71", x: 1755, y: 1588, pdf: "pdf/P71.pdf" },
-{ id: "Palo 72", x: 1955, y: 1588, pdf: "pdf/P72.pdf" },
-{ id: "Palo 73", x: 1755, y: 1805, pdf: "pdf/P73.pdf" },
-{ id: "Palo 74", x: 1955, y: 1805, pdf: "pdf/P74.pdf" },
-{ id: "Palo 75", x: 1856, y: 1906, pdf: "pdf/P75.pdf" },
-{ id: "Palo 76", x: 1755, y: 2007, pdf: "pdf/P76.pdf" },
-{ id: "Palo 77", x: 1955, y: 2007, pdf: "pdf/P77.pdf" },
-{ id: "Palo 78", x: 1755, y: 2226, pdf: "pdf/P78.pdf" },
-{ id: "Palo 79", x: 1955, y: 2226, pdf: "pdf/P79.pdf" },
-{ id: "Palo 80", x: 1856, y: 2325, pdf: "pdf/P80.pdf" },
-{ id: "Palo 81", x: 1755, y: 2426, pdf: "pdf/P81.pdf" },
-{ id: "Palo 82", x: 1955, y: 2426, pdf: "pdf/P82.pdf" },
+  /* --- Pali 58–82 --- */
+  { n: 58, x: 1755/3160, y: 547/2880 },
+  { n: 59, x: 1955/3160, y: 547/2880 },
+  { n: 60, x: 1856/3160, y: 649/2880 },
+  { n: 61, x: 1755/3160, y: 749/2880 },
+  { n: 62, x: 1955/3160, y: 749/2880 },
+  { n: 63, x: 1755/3160, y: 968/2880 },
+  { n: 64, x: 1955/3160, y: 968/2880 },
+  { n: 65, x: 1856/3160, y: 1067/2880 },
+  { n: 66, x: 1755/3160, y: 1168/2880 },
+  { n: 67, x: 1955/3160, y: 1168/2880 },
+  { n: 68, x: 1755/3160, y: 1386/2880 },
+  { n: 69, x: 1955/3160, y: 1386/2880 },
+  { n: 70, x: 1856/3160, y: 1487/2880 },
+  { n: 71, x: 1755/3160, y: 1588/2880 },
+  { n: 72, x: 1955/3160, y: 1588/2880 },
+  { n: 73, x: 1755/3160, y: 1805/2880 },
+  { n: 74, x: 1955/3160, y: 1805/2880 },
+  { n: 75, x: 1856/3160, y: 1906/2880 },
+  { n: 76, x: 1755/3160, y: 2007/2880 },
+  { n: 77, x: 1955/3160, y: 2007/2880 },
+  { n: 78, x: 1755/3160, y: 2226/2880 },
+  { n: 79, x: 1955/3160, y: 2226/2880 },
+  { n: 80, x: 1856/3160, y: 2325/2880 },
+  { n: 81, x: 1755/3160, y: 2426/2880 },
+  { n: 82, x: 1955/3160, y: 2426/2880 },
 
-      /* --- Pali 83–114 --- */
-      { id: "Palo 83", x: 2484, y: 544, pdf: "pdf/P83.pdf" },
-{ id: "Palo 84", x: 2684, y: 544, pdf: "pdf/P84.pdf" },
-{ id: "Palo 85", x: 2585, y: 645, pdf: "pdf/P85.pdf" },
-{ id: "Palo 86", x: 2484, y: 745, pdf: "pdf/P86.pdf" },
-{ id: "Palo 87", x: 2684, y: 745, pdf: "pdf/P87.pdf" },
-{ id: "Palo 88", x: 2585, y: 845, pdf: "pdf/P88.pdf" },
-{ id: "Palo 89", x: 2484, y: 946, pdf: "pdf/P89.pdf" },
-{ id: "Palo 90", x: 2684, y: 946, pdf: "pdf/P90.pdf" },
+  /* --- Pali 83–114 --- */
+  { n: 83, x: 2484/3160, y: 544/2880 },
+  { n: 84, x: 2684/3160, y: 544/2880 },
+  { n: 85, x: 2585/3160, y: 645/2880 },
+  { n: 86, x: 2484/3160, y: 745/2880 },
+  { n: 87, x: 2684/3160, y: 745/2880 },
+  { n: 88, x: 2585/3160, y: 845/2880 },
+  { n: 89, x: 2484/3160, y: 946/2880 },
+  { n: 90, x: 2684/3160, y: 946/2880 },
 
-{ id: "Palo 92", x: 2484, y: 1148, pdf: "pdf/P92.pdf" },
-{ id: "Palo 93", x: 2684, y: 1148, pdf: "pdf/P93.pdf" },
-{ id: "Palo 94", x: 2583, y: 1248, pdf: "pdf/P94.pdf" },
-{ id: "Palo 95", x: 2484, y: 1348, pdf: "pdf/P95.pdf" },
-{ id: "Palo 96", x: 2685, y: 1348, pdf: "pdf/P96.pdf" },
+  { n: 92, x: 2484/3160, y: 1148/2880 },
+  { n: 93, x: 2684/3160, y: 1148/2880 },
+  { n: 94, x: 2583/3160, y: 1248/2880 },
+  { n: 95, x: 2484/3160, y: 1348/2880 },
+  { n: 96, x: 2685/3160, y: 1348/2880 },
 
-{ id: "Palo 98", x: 2484, y: 1550, pdf: "pdf/P98.pdf" },
-{ id: "Palo 99", x: 2685, y: 1549, pdf: "pdf/P99.pdf" },
-{ id: "Palo 100", x: 2586, y: 1649, pdf: "pdf/P100.pdf" },
-{ id: "Palo 101", x: 2485, y: 1750, pdf: "pdf/P101.pdf" },
-{ id: "Palo 102", x: 2685, y: 1749, pdf: "pdf/P102.pdf" },
+  { n: 98, x: 2484/3160, y: 1550/2880 },
+  { n: 99, x: 2685/3160, y: 1549/2880 },
+  { n: 100, x: 2586/3160, y: 1649/2880 },
+  { n: 101, x: 2485/3160, y: 1750/2880 },
+  { n: 102, x: 2685/3160, y: 1749/2880 },
 
-{ id: "Palo 104", x: 2484, y: 1951, pdf: "pdf/P104.pdf" },
-{ id: "Palo 105", x: 2685, y: 1951, pdf: "pdf/P105.pdf" },
-{ id: "Palo 106", x: 2585, y: 2051, pdf: "pdf/P106.pdf" },
-{ id: "Palo 107", x: 2484, y: 2151, pdf: "pdf/P107.pdf" },
-{ id: "Palo 108", x: 2685, y: 2152, pdf: "pdf/P108.pdf" },
+  { n: 104, x: 2484/3160, y: 1951/2880 },
+  { n: 105, x: 2685/3160, y: 1951/2880 },
+  { n: 106, x: 2585/3160, y: 2051/2880 },
+  { n: 107, x: 2484/3160, y: 2151/2880 },
+  { n: 108, x: 2685/3160, y: 2152/2880 },
 
-{ id: "Palo 110", x: 2484, y: 2353, pdf: "pdf/P110.pdf" },
-{ id: "Palo 111", x: 2685, y: 2353, pdf: "pdf/P111.pdf" },
-{ id: "Palo 112", x: 2585, y: 2454, pdf: "pdf/P112.pdf" },
-{ id: "Palo 113", x: 2485, y: 2553, pdf: "pdf/P113.pdf" },
-{ id: "Palo 114", x: 2685, y: 2553, pdf: "pdf/P114.pdf" },
+  { n: 110, x: 2484/3160, y: 2353/2880 },
+  { n: 111, x: 2685/3160, y: 2353/2880 },
+  { n: 112, x: 2585/3160, y: 2454/2880 },
+  { n: 113, x: 2485/3160, y: 2553/2880 },
+  { n: 114, x: 2685/3160, y: 2553/2880 },
 
-{ id: "Palo 436", x: 1371, y: 1277, pdf: "pdf/P436.pdf" },
-{ id: "Palo 437", x: 1548, y: 1212, pdf: "pdf/P437.pdf" },
-{ id: "Palo 438", x: 1549, y: 1343, pdf: "pdf/P438.pdf" },
-{ id: "Palo 439", x: 1549, y: 1473, pdf: "pdf/P439.pdf" },
-{ id: "Palo 440", x: 1417, y: 1414, pdf: "pdf/P440.pdf" },
+  /* --- Pali 436–440 --- */
+  { n: 436, x: 1371/3160, y: 1277/2880 },
+  { n: 437, x: 1548/3160, y: 1212/2880 },
+  { n: 438, x: 1549/3160, y: 1343/2880 },
+  { n: 439, x: 1549/3160, y: 1473/2880 },
+  { n: 440, x: 1417/3160, y: 1414/2880 }
+];
+<script>
 
-    ];
+/* ============================
+   FUNZIONI LEGGENDA E FILTRI
+   ============================ */
 
-    const map = document.getElementById("map");
-    const img = document.getElementById("mapImage");
-    const tooltip = document.getElementById("tooltip");
+function toggleLegend() {
+  const panel = document.getElementById("legendPanel");
+  panel.style.display = (panel.style.display === "block") ? "none" : "block";
+}
 
-    img.addEventListener("load", () => {
-      const imgWidth = img.naturalWidth;
-      const imgHeight = img.naturalHeight;
+let filterScapitozzati = false;
 
-      markers.forEach(m => {
-        const el = document.createElement("div");
-        el.className = "marker";
+function toggleScapitozzati() {
+  filterScapitozzati = !filterScapitozzati;
 
-        const leftPercent = (m.x / imgWidth) * 100;
-        const topPercent = (m.y / imgHeight) * 100;
+  document.querySelectorAll('.marker').forEach(marker => {
+    const isScapitozzato = marker.dataset.scapitozzato === "true";
 
-        el.style.left = leftPercent + "%";
-        el.style.top = topPercent + "%";
+    if (filterScapitozzati) {
+      if (isScapitozzato) {
+        marker.style.display = "block";
+        marker.classList.add("scapitozzato-attivo");
+      } else {
+        marker.style.display = "none";
+      }
+    } else {
+      marker.style.display = "block";
+      marker.classList.remove("scapitozzato-attivo");
+    }
+  });
+}
 
-        el.addEventListener("mouseenter", () => {
-          tooltip.textContent = m.id;
-          tooltip.style.left = leftPercent + "%";
-          tooltip.style.top = topPercent + "%";
-          tooltip.style.display = "block";
-        });
+/* ============================
+   CREAZIONE MARKER
+   ============================ */
 
-        el.addEventListener("mouseleave", () => {
-          tooltip.style.display = "none";
-        });
+const map = document.getElementById("map");
+const tooltip = document.getElementById("tooltip");
 
-        el.addEventListener("click", () => {
-          if (m.pdf) window.open(m.pdf, "_blank");
-        });
+let selectedMarker = null;
 
-        map.appendChild(el);
-      });
-    });
-  </script>
+tooltip.addEventListener("mouseenter", () => {
+  tooltip.style.display = "block";
+});
 
-  <script src="js/app.js"></script>
-</body>
+tooltip.addEventListener("mouseleave", () => {
+  tooltip.style.display = "none";
+});
 
-</html>
+markers.forEach(m => {
+  const el = document.createElement("div");
 
+  // CB non ha pali scapitozzati → default false
+  el.dataset.scapitozzato = "false";
 
+  // colore base CB (modificabile)
+  el.className = "marker";
 
+  // posizionamento percentuale
+  el.style.left = (m.x * 100) + "%";
+  el.style.top = (m.y * 100) + "%";
 
+  /* Tooltip al passaggio */
+  el.addEventListener("mouseenter", () => {
+    tooltip.innerHTML = `
+      <div><strong>Palo ${m.n}</strong></div>
+      <a href="pdf/P_${m.n}.pdf" target="_blank">📄 Elaborato Progettuale</a>
+      <a href="Qualità/P_${m.n}_QLT.pdf" target="_blank">🟠 Documento Qualità (QLT)</a>
+    `;
+    tooltip.style.left = (m.x * 100) + "%";
+    tooltip.style.top = (m.y * 100) + "%";
+    tooltip.style.display = "block";
+  });
 
+  el.addEventListener("mouseleave", () => {
+    setTimeout(() => {
+      if (!tooltip.matches(':hover')) {
+        tooltip.style.display = "none";
+      }
+    }, 120);
+  });
 
+  /* Click → selezione + apertura PDF */
+  el.addEventListener("click", () => {
+    if (selectedMarker) selectedMarker.classList.remove("selected");
+    el.classList.add("selected");
+    selectedMarker = el;
+
+    window.open(`pdf/P_${m.n}.pdf`, "_blank");
+  });
+
+  map.appendChild(el);
+});
+
+</script>
