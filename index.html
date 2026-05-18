@@ -425,7 +425,7 @@ markers.forEach(m => {
     if (selectedMarker) selectedMarker.classList.remove("selected");
     el.classList.add("selected");
     selectedMarker = el;
-    window.open(`pdf/P_${m.n}.pdf`, "_blank");
+    window.open(`pdf/P${m.n}.pdf`, "_blank");
   });
 
   map.appendChild(el);
